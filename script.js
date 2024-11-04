@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let trumpVotes = 0;
     let kamalaVotes = 0;
+    let lastTrumpVotes = 0;
+    let lastKamalaVotes = 0;
 
     const voteChartCtx = document.getElementById('vote-chart').getContext('2d');
     const voteChart = new Chart(voteChartCtx, {
@@ -69,17 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchResults() {
-        fetch('/api/vote')  // Note: '/api/vote' should retrieve vote counts
+        fetch('/api/vote')
             .then(response => response.json())
             .then(data => {
-                trumpVotes = data.trumpVotes;
-                kamalaVotes = data.kamalaVotes;
-                updateCounts();
-                updateChart();
+                // Only update if there is a change in vote counts
+                if (data.trumpVotes !== lastTrumpVotes || data.kamalaVotes !== lastKamalaVotes) {
+                    trumpVotes = data.trumpVotes;
+                    kamalaVotes = data.kamalaVotes;
+                    updateCounts();
+                    updateChart();
+                    
+                    // Update the last known vote counts
+                    lastTrumpVotes = trumpVotes;
+                    lastKamalaVotes = kamalaVotes;
+                }
             })
             .catch(error => console.error('Error fetching live updates:', error));
     }
-
-    // Poll every 5 seconds for updates
-    setInterval(fetchResults, 1000);
-});
+    
+    // Poll every 3 seconds for updates
+    setInterval(fetchResults, 3000);
