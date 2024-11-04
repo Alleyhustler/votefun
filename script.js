@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error('Error fetching live updates:', error));
     }
-    
+
     // Poll every 3 seconds for updates
     setInterval(fetchResults, 3000);
 
@@ -133,7 +133,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");
     const sendChatButton = document.getElementById("send-chat");
-    
+
+    // Function to generate a color based on wallet address
+    function getColor(walletAddress) {
+        const hash = Array.from(walletAddress).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hue = hash % 360;
+        return `hsl(${hue}, 70%, 50%)`;
+    }
+
     function sendMessage() {
         const message = chatInput.value.trim();
         if (!userWalletAddress || message === "") {
@@ -163,7 +170,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatMessages.innerHTML = ""; // Clear current messages
                 data.forEach(message => {
                     const newMessage = document.createElement("p");
-                    newMessage.textContent = `${message.user}: ${message.text}`;
+                    const shortWallet = message.user.slice(0, 4); // Get the first four letters of the wallet
+                    newMessage.textContent = `${shortWallet}: ${message.text}`;
+                    newMessage.style.color = getColor(message.user); // Set color based on wallet
                     chatMessages.appendChild(newMessage);
                 });
                 chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
