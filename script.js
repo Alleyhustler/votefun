@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         label: function(tooltipItem) {
                             const label = tooltipItem.label || '';
                             const count = tooltipItem.raw;
-                            return ${label}: ${count};
+                            return `${label}: ${count}`;
                         }
                     }
                 }
@@ -68,8 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         voteChart.update();
     }
 
-    fetchResults();
-
     function fetchResults() {
         fetch('/api/results')
             .then(response => response.json())
@@ -81,4 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error('Error:', error));
     }
+
+    // Call fetchResults every 5 seconds (5000 milliseconds)
+    setInterval(fetchResults, 5000);
 });
