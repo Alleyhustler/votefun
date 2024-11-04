@@ -109,7 +109,9 @@ async function connectWallet() {
             const response = await window.solana.connect();
             userWalletAddress = response.publicKey.toString();
             document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
-            document.getElementById("connect-wallet").classList.add('connected');
+            const connectButton = document.getElementById("connect-wallet"); // Update button ID as needed
+            connectButton.classList.add('connected');
+            connectButton.textContent = 'Wallet Connected'; // Change button text
             enableVoting(); // Enable voting when the wallet is connected
         } catch (err) {
             console.error("Wallet connection error:", err);
