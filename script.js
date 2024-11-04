@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchResults() {
-        fetch('/api/results')
+        fetch('/api/vote')  // Note: '/api/vote' should retrieve vote counts
             .then(response => response.json())
             .then(data => {
                 trumpVotes = data.trumpVotes;
@@ -77,22 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateCounts();
                 updateChart();
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error fetching live updates:', error));
     }
 
-    // Call fetchResults every 5 seconds (5000 milliseconds)
+    // Poll every 5 seconds for updates
     setInterval(fetchResults, 5000);
 });
-
-// Regularly fetch updated results every 5 seconds without requiring interaction
-setInterval(() => {
-    fetch('/api/vote')
-        .then(response => response.json())
-        .then(data => {
-            trumpVotes = data.trumpVotes;
-            kamalaVotes = data.kamalaVotes;
-            updateCounts();
-            updateChart();
-        })
-        .catch(error => console.error('Error fetching live updates:', error));
-}, 5000);
