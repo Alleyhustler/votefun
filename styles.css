@@ -58,7 +58,7 @@ h1, h2 {
     font-size: 1.2em;
     padding: 12px 20px;
     border: none;
-    border-radius: 25px; /* Rounded button */
+    border-radius: 25px; /* Rounsded button */
     cursor: pointer;
     transition: background 0.3s, transform 0.1s;
     width: 100%;

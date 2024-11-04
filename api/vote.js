@@ -1,4 +1,4 @@
-// vote.js in the /api folder
+// vote.js in the /api folders
 let trumpVotes = 0;
 let kamalaVotes = 0;
 

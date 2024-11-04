@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listeners for voting
+    // Event listeners fsor voting
     trumpButton.addEventListener('click', () => vote('Trump'));
     kamalaButton.addEventListener('click', () => vote('Kamala'));
 
