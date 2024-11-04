@@ -30,35 +30,22 @@ document.addEventListener('DOMContentLoaded', () => {
             plugins: {
                 tooltip: {
                     callbacks: {
-                        label: (tooltipItem) => `${tooltipItem.label || ''}: ${tooltipItem.raw}`
+                        label: (tooltipItem) => ${tooltipItem.label || ''}: ${tooltipItem.raw}
                     }
                 }
             }
         }
     });
 
-    // Wallet connection and points fetching
+    // Voting and Wallet Connection
     async function connectWallet() {
         if (window.solana && window.solana.isPhantom) {
             try {
                 const response = await window.solana.connect();
                 userWalletAddress = response.publicKey.toString();
-                document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
+                document.getElementById("wallet-status").textContent = Connected: ${userWalletAddress};
                 connectButton.classList.add('connected');
                 connectButton.textContent = 'Wallet Connected';
-
-                // Fetch $VOTE balance
-                const voteAmount = await getVoteAmount(userWalletAddress); // Implement this function
-
-                // Fetch airdrop eligibility
-                fetch(`/api/vote?walletAddress=${userWalletAddress}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const airdropMessage = `You are eligible for an airdrop of ${data.airdropAmount} $VOTE based on your ${data.userPoints} points.`;
-                        alert(airdropMessage);
-                    })
-                    .catch(error => console.error('Error fetching airdrop eligibility:', error));
-
                 enableVoting();
             } catch (err) {
                 console.error("Wallet connection error:", err);
@@ -74,13 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Fetch $VOTE balance (mock for now)
-        const voteAmount = 100; // Replace with actual balance fetching logic
-
         fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ candidate, walletAddress: userWalletAddress, voteAmount })
+            body: JSON.stringify({ candidate, walletAddress: userWalletAddress })
         })
         .then(response => response.json())
         .then(data => {
@@ -100,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showVoteConfirmation(candidate) {
         const confirmationMessage = document.createElement("div");
-        confirmationMessage.textContent = `You voted for ${candidate}!`;
+        confirmationMessage.textContent = You voted for ${candidate}!;
         confirmationMessage.classList.add("vote-confirmation");
         document.body.appendChild(confirmationMessage);
         setTimeout(() => confirmationMessage.remove(), 3000);
@@ -141,6 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching live updates:', error));
     }
 
+    setInterval(fetchResults, 3000);
+
     // Chat Functions
     function sendMessage() {
         const message = chatInput.value.trim();
@@ -171,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.forEach(message => {
                     const newMessage = document.createElement("p");
                     const shortWallet = message.user.slice(0, 4);
-                    newMessage.textContent = `${shortWallet}: ${message.text}`;
+                    newMessage.textContent = ${shortWallet}: ${message.text};
                     newMessage.style.color = getColor(message.user);
                     chatMessages.appendChild(newMessage);
                 });
@@ -184,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getColor(walletAddress) {
         const hash = Array.from(walletAddress).reduce((acc, char) => acc + char.charCodeAt(0), 0);
         const hue = hash % 360;
-        return `hsl(${hue}, 70%, 50%)`;
+        return hsl(${hue}, 70%, 50%);
     }
 
     // Event Listeners
@@ -196,6 +182,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === "Enter") sendMessage();
     });
 
-    setInterval(fetchResults, 3000);
     setInterval(fetchMessages, 3000);
 });
