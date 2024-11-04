@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         data: {
             labels: ['Trump', 'Kamala'],
             datasets: [{
-                data: [1, 1],
+                data: [0, 0], // Start with zero votes
                 backgroundColor: ['#ff4757', '#74b9ff'],
                 hoverOffset: 4
             }]
@@ -70,7 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fetchResults() {
         fetch('/api/results')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 trumpVotes = data.trumpVotes;
                 kamalaVotes = data.kamalaVotes;
@@ -82,4 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Call fetchResults every 5 seconds (5000 milliseconds)
     setInterval(fetchResults, 5000);
+
+    // Initial fetch to load results on page load
+    fetchResults();
 });
