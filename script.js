@@ -153,27 +153,29 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 const wasScrolledToBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 1;
-                chatMessages.innerHTML = "";
+                chatMessages.innerHTML = ""; // Clear current messages
+    
                 data.forEach(message => {
                     const newMessage = document.createElement("p");
                     const shortWallet = message.user.slice(0, 4);
+                    
+                    // Parse and format timestamp
                     const date = new Date(message.timestamp);
                     const formattedTime = `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+                    
+                    // Set message content with formatted timestamp
                     newMessage.textContent = `[${formattedTime}] ${shortWallet}: ${message.text}`;
                     newMessage.style.color = getColor(message.user);
                     chatMessages.appendChild(newMessage);
                 });
-
-                if (wasScrolledToBottom) chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+                // Auto-scroll if previously at the bottom
+                if (wasScrolledToBottom) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             })
             .catch(error => console.error('Error fetching messages:', error));
-    }
-
-    function getColor(walletAddress) {
-        const hash = Array.from(walletAddress).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const hue = hash % 360;
-        return `hsl(${hue}, 70%, 50%)`;
-    }
+    }    
 
     // Event Listeners
     connectButton.addEventListener("click", connectWallet);
