@@ -81,5 +81,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Poll every 5 seconds for updates
-    setInterval(fetchResults, 5000);
+    setInterval(fetchResults, 1000);
 });
