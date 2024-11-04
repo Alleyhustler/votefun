@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteFun - Interactive Election Poll</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1 class="lilita-one-regular">VoteFun: Cast Your Vote</h1>
+    <div class="candidates">
+        <div class="candidate-card" id="card-trump">
+            <img src="path_to_trump_image.jpg" alt="Trump" class="candidate-image">
+            <h2 class="lilita-one-regular">Trump</h2>
+            <button id="vote-trump" class="vote-button">Vote for Trump</button>
+            <span id="trump-count" class="vote-count">0</span> Votes
+        </div>
+        <div class="candidate-card" id="card-kamala">
+            <img src="path_to_kamala_image.jpg" alt="Kamala" class="candidate-image">
+            <h2 class="lilita-one-regular">Kamala</h2>
+            <button id="vote-kamala" class="vote-button">Vote for Kamala</button>
+            <span id="kamala-count" class="vote-count">0</span> Votes
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <h2 class="lilita-one-regular">Current Votes Distribution</h2>
+        <canvas id="vote-chart" class="chart"></canvas>
+    </div>
+
+    <div class="results">
+        <h2 class="lilita-one-regular">Current Results</h2>
+        <p>Trump: <span id="result-trump">0</span> votes</p>
+        <p>Kamala: <span id="result-kamala">0</span> votes</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
