@@ -11,11 +11,18 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1 class="lilita-one-regular">VoteFun: Cast Your Vote</h1>
+    <div class="top-left-section">
+        <img src="Progetto senza titolo (43) (1).png" alt="Logo" class="logo">
+        <a href="https://twitter.com/yourTwitterHandle" target="_blank" class="social-link twitter-link">Twitter</a>
+        <a href="https://t.me/yourTelegramHandle" target="_blank" class="social-link telegram-link">DEX (SOON)</a>
+        <p class="contract-address">Contract Address </Address>: HERE</p>
+    </div>
     <div class="wallet-container">
         <button id="connect-wallet" class="connect-wallet">Connect Wallet</button>
         <p id="wallet-status">Not Connected</p>
     </div>
+    <h1 class="lilita-one-regular">VoteFun: Cast Your Vote</h1>
+
     <div class="candidates">
         <div class="candidate-card" id="card-trump">
             <img src="trump-circle.png" alt="Trump" class="candidate-image">
@@ -32,7 +39,7 @@
     </div>
 
     <div class="chat-container">
-        <h2 class="chat-title">Degens Chat</h2>
+        <h2 class="chat-title">Degens Chat (LIVE)</h2>
         <div id="chat-messages" class="chat-messages"></div>
         <input id="chat-input" class="chat-input" type="text" placeholder="Type a message..." />
         <button id="send-chat" class="send-chat">Send</button>
