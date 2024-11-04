@@ -47,9 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 connectButton.classList.add('connected');
                 connectButton.textContent = 'Wallet Connected';
                 enableVoting();
-    
-                // Fetch $VOTE balance after connection
-                fetchVoteBalance();
             } catch (err) {
                 console.error("Wallet connection error:", err);
             }
@@ -57,29 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Please install Phantom Wallet to vote.");
         }
     }
-    
-    async function fetchVoteBalance() {
-        fetch(`/api/balance?walletAddress=${userWalletAddress}`)
-            .then(response => response.json())
-            .then(data => {
-                userVoteBalance = data.balance; // store the balance for point calculations
-                console.log(`Balance of $VOTE: ${userVoteBalance}`);
-            })
-            .catch(error => console.error('Error fetching balance:', error));
-    }
-    
 
     function vote(candidate) {
         if (!userWalletAddress) {
             alert("Please connect your wallet first.");
             return;
         }
-    
-        const points = userVoteBalance; // Points are based on $VOTE balance
+
         fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ candidate, walletAddress: userWalletAddress, points: points })
+            body: JSON.stringify({ candidate, walletAddress: userWalletAddress })
         })
         .then(response => response.json())
         .then(data => {
@@ -96,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error:', error));
     }
-    
 
     function showVoteConfirmation(candidate) {
         const confirmationMessage = document.createElement("div");
