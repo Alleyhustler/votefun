@@ -42,21 +42,36 @@ document.addEventListener('DOMContentLoaded', () => {
     kamalaButton.addEventListener('click', () => vote('Kamala'));
 
     function vote(candidate) {
+        if (!userWalletAddress) {
+            alert("Please connect your wallet first.");
+            return;
+        }
+    
         fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ candidate })
+            body: JSON.stringify({ candidate, walletAddress: userWalletAddress })
         })
         .then(response => response.json())
         .then(data => {
-            trumpVotes = data.trumpVotes;
-            kamalaVotes = data.kamalaVotes;
-            updateCounts();
-            updateChart();
+            if (data.error) {
+                alert(data.error);
+            } else {
+                trumpVotes = data.trumpVotes;
+                kamalaVotes = data.kamalaVotes;
+                updateCounts();
+                updateChart();
+                disableVoting();
+            }
         })
         .catch(error => console.error('Error:', error));
     }
-
+    
+    function disableVoting() {
+        document.getElementById('vote-trump').disabled = true;
+        document.getElementById('vote-kamala').disabled = true;
+    }
+    
     function updateCounts() {
         trumpCount.textContent = trumpVotes;
         kamalaCount.textContent = kamalaVotes;
@@ -91,3 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Poll every 3 seconds for updates
     setInterval(fetchResults, 3000);
 });
+
+let userWalletAddress = null;
+
+async function connectWallet() {
+    if (window.solana && window.solana.isPhantom) {
+        try {
+            const response = await window.solana.connect();
+            userWalletAddress = response.publicKey.toString();
+            document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
+        } catch (err) {
+            console.error("Wallet connection error:", err);
+        }
+    } else {
+        alert("Please install Phantom Wallet to vote.");
+    }
+}
+
+// Call connectWallet when user clicks "Connect Wallet" button
+document.getElementById("connect-wallet-button").addEventListener("click", connectWallet);
