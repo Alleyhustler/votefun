@@ -23,6 +23,6 @@ export default (req, res) => {
         return res.json({ trumpVotes, kamalaVotes });
     } else {
         res.setHeader('Allow', ['GET', 'POST']);
-        res.status(405).end(Method ${req.method} Not Allowed);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 };
