@@ -83,3 +83,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call fetchResults every 5 seconds (5000 milliseconds)
     setInterval(fetchResults, 5000);
 });
+
+// Regularly fetch updated results every 5 seconds without requiring interaction
+setInterval(() => {
+    fetch('/api/vote')
+        .then(response => response.json())
+        .then(data => {
+            trumpVotes = data.trumpVotes;
+            kamalaVotes = data.kamalaVotes;
+            updateCounts();
+            updateChart();
+        })
+        .catch(error => console.error('Error fetching live updates:', error));
+}, 5000);
