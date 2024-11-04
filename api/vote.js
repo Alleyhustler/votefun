@@ -1,8 +1,12 @@
-let votes = {};
+let trumpVotes = 0;
+let kamalaVotes = 0;
+let votes = {}; // To track if a wallet has voted
 
 export default (req, res) => {
     if (req.method === 'POST') {
         const { candidate, walletAddress } = req.body;
+
+        // Check if the wallet has already voted
         if (votes[walletAddress]) {
             return res.status(400).json({ error: 'You have already voted.' });
         }

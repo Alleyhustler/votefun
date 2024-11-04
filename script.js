@@ -54,11 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                alert(data.error); // Show any error messages from the server
+                return;
+            }
             trumpVotes = data.trumpVotes;
             kamalaVotes = data.kamalaVotes;
             updateCounts();
             updateChart();
-            disableVoting();
+            disableVoting(); // Disable voting after a successful vote
         })
         .catch(error => console.error('Error:', error));
     }
@@ -106,7 +110,7 @@ async function connectWallet() {
             userWalletAddress = response.publicKey.toString();
             document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
             document.getElementById("connect-wallet").classList.add('connected');
-            enableVoting(); // Re-enable voting if previously disabled
+            enableVoting(); // Enable voting when the wallet is connected
         } catch (err) {
             console.error("Wallet connection error:", err);
         }
