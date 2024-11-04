@@ -21,6 +21,11 @@ h1, h2 {
     margin-bottom: 20px; /* Space below titles */
 }
 
+.wallet-container {
+    text-align: center;
+    margin-bottom: 20px; /* Space below wallet container */
+}
+
 .candidates {
     display: flex;
     justify-content: space-around;
@@ -58,7 +63,7 @@ h1, h2 {
     font-size: 1.2em;
     padding: 12px 20px;
     border: none;
-    border-radius: 25px; /* Rounsded button */
+    border-radius: 25px; /* Rounded button */
     cursor: pointer;
     transition: background 0.3s, transform 0.1s;
     width: 100%;
@@ -85,7 +90,6 @@ h1, h2 {
     height: 300px;
 }
 
-
 .results {
     margin-top: 30px;
     padding: 15px;
@@ -100,12 +104,12 @@ h1, h2 {
 .connect-wallet {
     background: linear-gradient(45deg, #4CAF50, #2e7d32);
     color: white;
-    padding: 10px 20px;
+    padding: 12px 25px; /* Slightly larger padding for better look */
     border: none;
     border-radius: 25px;
     cursor: pointer;
-    font-size: 1.2em;
-    transition: background 0.3s;
+    font-size: 1.3em; /* Increased font size for emphasis */
+    transition: background 0.3s, transform 0.1s;
 }
 
 .connect-wallet:hover {
@@ -119,12 +123,8 @@ h1, h2 {
     font-weight: bold; /* Optional: Make the text bold */
 }
 
-
 .connect-wallet:disabled {
     background: #c8e6c9;
     color: #6d6d6d;
     cursor: not-allowed;
 }
-
-
-
