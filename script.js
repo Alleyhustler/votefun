@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 connectButton.classList.add('connected');
                 connectButton.textContent = 'Wallet Connected';
 
-                // Fetch $VOTE balance (mock this as needed)
-                const voteAmount = await getVoteAmount(userWalletAddress); // Assume this function fetches the balance
+                // Fetch $VOTE balance
+                const voteAmount = await getVoteAmount(userWalletAddress); // Implement this function
 
                 // Fetch airdrop eligibility
                 fetch(`/api/vote?walletAddress=${userWalletAddress}`)
@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Mock vote amount (replace this with the actual balance fetching logic)
-        const voteAmount = 100; // This should be replaced with the actual $VOTE amount held
+        // Fetch $VOTE balance (mock for now)
+        const voteAmount = 100; // Replace with actual balance fetching logic
 
         fetch('/api/vote', {
             method: 'POST',
