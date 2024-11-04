@@ -5,11 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const kamalaCount = document.getElementById('kamala-count');
     const resultTrump = document.getElementById('result-trump');
     const resultKamala = document.getElementById('result-kamala');
+    const connectWalletButton = document.getElementById('connect-wallet');
 
     let trumpVotes = 0;
     let kamalaVotes = 0;
     let lastTrumpVotes = 0;
     let lastKamalaVotes = 0;
+    let userWalletAddress = null; // Store the user's wallet address
 
     const voteChartCtx = document.getElementById('vote-chart').getContext('2d');
     const voteChart = new Chart(voteChartCtx, {
@@ -41,12 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
     trumpButton.addEventListener('click', () => vote('Trump'));
     kamalaButton.addEventListener('click', () => vote('Kamala'));
 
-    function vote(candidate) {
+    async function vote(candidate) {
         if (!userWalletAddress) {
             alert("Please connect your wallet first.");
             return;
         }
-    
+
         fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -66,12 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error:', error));
     }
-    
+
     function disableVoting() {
-        document.getElementById('vote-trump').disabled = true;
-        document.getElementById('vote-kamala').disabled = true;
+        trumpButton.disabled = true;
+        kamalaButton.disabled = true;
     }
-    
+
     function updateCounts() {
         trumpCount.textContent = trumpVotes;
         kamalaCount.textContent = kamalaVotes;
@@ -92,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update the vote counts regardless to keep the chart rendering
                 trumpVotes = data.trumpVotes;
                 kamalaVotes = data.kamalaVotes;
-                
+
                 updateCounts();
                 updateChart();
 
@@ -102,19 +104,19 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error('Error fetching live updates:', error));
     }
-    
+
     // Poll every 3 seconds for updates
     setInterval(fetchResults, 3000);
 });
 
-let userWalletAddress = null;
-
+// Wallet connection logic
 async function connectWallet() {
     if (window.solana && window.solana.isPhantom) {
         try {
             const response = await window.solana.connect();
             userWalletAddress = response.publicKey.toString();
             document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
+            document.getElementById("connect-wallet").classList.add('connected');
         } catch (err) {
             console.error("Wallet connection error:", err);
         }
