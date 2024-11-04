@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Voting and Wallet Connection
+    // Wallet connection and points fetching
     async function connectWallet() {
         if (window.solana && window.solana.isPhantom) {
             try {
@@ -46,6 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
                 connectButton.classList.add('connected');
                 connectButton.textContent = 'Wallet Connected';
+
+                // Fetch $VOTE balance (mock this as needed)
+                const voteAmount = await getVoteAmount(userWalletAddress); // Assume this function fetches the balance
+
+                // Fetch airdrop eligibility
+                fetch(`/api/vote?walletAddress=${userWalletAddress}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const airdropMessage = `You are eligible for an airdrop of ${data.airdropAmount} $VOTE based on your ${data.userPoints} points.`;
+                        alert(airdropMessage);
+                    })
+                    .catch(error => console.error('Error fetching airdrop eligibility:', error));
+
                 enableVoting();
             } catch (err) {
                 console.error("Wallet connection error:", err);
@@ -61,10 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Mock vote amount (replace this with the actual balance fetching logic)
+        const voteAmount = 100; // This should be replaced with the actual $VOTE amount held
+
         fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ candidate, walletAddress: userWalletAddress })
+            body: JSON.stringify({ candidate, walletAddress: userWalletAddress, voteAmount })
         })
         .then(response => response.json())
         .then(data => {
@@ -125,8 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching live updates:', error));
     }
 
-    setInterval(fetchResults, 3000);
-
     // Chat Functions
     function sendMessage() {
         const message = chatInput.value.trim();
@@ -182,5 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === "Enter") sendMessage();
     });
 
+    setInterval(fetchResults, 3000);
     setInterval(fetchMessages, 3000);
 });
