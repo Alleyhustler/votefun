@@ -8,7 +8,7 @@ export default (req, res) => {
 
         // Check if the wallet has already voted
         if (votes[walletAddress]) {
-            return res.status(400).json({ error: 'You have already voted.' });
+            return res.status(400).json({ error: 'You can only vote once.' });
         }
 
         if (candidate === 'Trump') {

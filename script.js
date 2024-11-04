@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert(data.error); // Show any error messages from the server
+                alert(data.error); // Show error message from the server
                 return;
             }
             trumpVotes = data.trumpVotes;
