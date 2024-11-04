@@ -131,8 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function sendMessage() {
         const message = chatInput.value.trim();
         if (!userWalletAddress || !message) {
-            alert("Please connect your wallet and enter a message.");
-            return;
+            return alert("Please connect your wallet and enter a message.");
         }
 
         fetch('/api/chat', {
@@ -140,12 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user: userWalletAddress, text: message })
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to send message');
-            chatInput.value = "";
-            fetchMessages();
-        })
-        .catch(error => console.error('Error sending message:', error));
+        .then(response => response.ok ? chatInput.value = "" : Promise.reject('Failed to send message'))
+        .then(fetchMessages)
+        .catch(console.error);
     }
 
     function fetchMessages() {
@@ -155,26 +151,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const wasScrolledToBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 1;
                 chatMessages.innerHTML = ""; // Clear current messages
     
-                data.forEach(message => {
+                data.forEach(({ user, text, timestamp }) => {
                     const newMessage = document.createElement("p");
-                    const shortWallet = message.user.slice(0, 4);
-                    
-                    // Parse and format timestamp
-                    const date = new Date(message.timestamp);
+                    const shortWallet = user.slice(0, 4);
+                    const date = new Date(timestamp);
                     const formattedTime = `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
-                    
-                    // Set message content with formatted timestamp
-                    newMessage.textContent = `[${formattedTime}] ${shortWallet}: ${message.text}`;
-                    newMessage.style.color = getColor(message.user);
+                    newMessage.textContent = `[${formattedTime}] ${shortWallet}: ${text}`;
                     chatMessages.appendChild(newMessage);
                 });
-    
-                // Auto-scroll if previously at the bottom
-                if (wasScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
+
+                if (wasScrolledToBottom) chatMessages.scrollTop = chatMessages.scrollHeight;
             })
-            .catch(error => console.error('Error fetching messages:', error));
+            .catch(console.error);
     }    
 
     // Event Listeners
@@ -182,9 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
     trumpButton.addEventListener('click', () => vote('Trump'));
     kamalaButton.addEventListener('click', () => vote('Kamala'));
     sendChatButton.addEventListener("click", sendMessage);
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendMessage();
-    });
+    chatInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
 
     setInterval(fetchMessages, 3000);
+    setInterval(fetchResults, 3000);
 });
