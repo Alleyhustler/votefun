@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function sendMessage() {
         const message = chatInput.value.trim();
         if (!userWalletAddress || !message) {
-            return alert("Please connect your wallet and enter a message.");
+            alert("Please connect your wallet and enter a message.");
+            return;
         }
 
         fetch('/api/chat', {
@@ -139,9 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user: userWalletAddress, text: message })
         })
-        .then(response => response.ok ? chatInput.value = "" : Promise.reject('Failed to send message'))
-        .then(fetchMessages)
-        .catch(console.error);
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to send message');
+            chatInput.value = "";
+            fetchMessages();
+        })
+        .catch(error => console.error('Error sending message:', error));
     }
 
     function fetchMessages() {
@@ -149,29 +153,34 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 const wasScrolledToBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 1;
-                chatMessages.innerHTML = ""; // Clear current messages
-    
-                data.forEach(({ user, text, timestamp }) => {
+                chatMessages.innerHTML = "";
+                data.forEach(message => {
                     const newMessage = document.createElement("p");
-                    const shortWallet = user.slice(0, 4);
-                    const date = new Date(timestamp);
-                    const formattedTime = `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
-                    newMessage.textContent = `[${formattedTime}] ${shortWallet}: ${text}`;
+                    const shortWallet = message.user.slice(0, 4);
+                    newMessage.textContent = `${shortWallet}: ${message.text}`;
+                    newMessage.style.color = getColor(message.user);
                     chatMessages.appendChild(newMessage);
                 });
 
                 if (wasScrolledToBottom) chatMessages.scrollTop = chatMessages.scrollHeight;
             })
-            .catch(console.error);
-    }    
+            .catch(error => console.error('Error fetching messages:', error));
+    }
+
+    function getColor(walletAddress) {
+        const hash = Array.from(walletAddress).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hue = hash % 360;
+        return `hsl(${hue}, 70%, 50%)`;
+    }
 
     // Event Listeners
     connectButton.addEventListener("click", connectWallet);
     trumpButton.addEventListener('click', () => vote('Trump'));
     kamalaButton.addEventListener('click', () => vote('Kamala'));
     sendChatButton.addEventListener("click", sendMessage);
-    chatInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
 
     setInterval(fetchMessages, 3000);
-    setInterval(fetchResults, 3000);
 });
