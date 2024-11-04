@@ -129,30 +129,53 @@ document.addEventListener('DOMContentLoaded', () => {
         kamalaButton.disabled = false;
     }
 
-    // WebSocket for chat
-    const chatSocket = new WebSocket("wss://your-chat-server.com");
-    chatSocket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        const chatMessages = document.getElementById("chat-messages");
-        const newMessage = document.createElement("p");
-        newMessage.textContent = `${message.user}: ${message.text}`;
-        chatMessages.appendChild(newMessage);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    };
-
+    // Chat functionality
+    const chatMessages = document.getElementById("chat-messages");
+    const chatInput = document.getElementById("chat-input");
+    const sendChatButton = document.getElementById("send-chat");
+    
     function sendMessage() {
-        const chatInput = document.getElementById("chat-input");
         const message = chatInput.value.trim();
         if (!userWalletAddress || message === "") {
             alert("Please connect your wallet and enter a message.");
             return;
         }
-        chatSocket.send(JSON.stringify({ user: userWalletAddress, text: message }));
-        chatInput.value = "";
+
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: userWalletAddress, text: message })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to send message');
+            }
+            chatInput.value = ""; // Clear the input
+            fetchMessages(); // Fetch updated messages
+        })
+        .catch(error => console.error('Error sending message:', error));
     }
 
-    document.getElementById("send-chat").addEventListener("click", sendMessage);
-    document.getElementById("chat-input").addEventListener("keypress", (e) => {
+    function fetchMessages() {
+        fetch('/api/chat')
+            .then(response => response.json())
+            .then(data => {
+                chatMessages.innerHTML = ""; // Clear current messages
+                data.forEach(message => {
+                    const newMessage = document.createElement("p");
+                    newMessage.textContent = `${message.user}: ${message.text}`;
+                    chatMessages.appendChild(newMessage);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
+            })
+            .catch(error => console.error('Error fetching messages:', error));
+    }
+
+    // Poll every 3 seconds for chat updates
+    setInterval(fetchMessages, 3000);
+
+    sendChatButton.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") sendMessage();
     });
 });
