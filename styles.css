@@ -212,3 +212,26 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: opacity 0.3s;
 }
+
+.airdrop-info {
+    position: absolute;
+    top: 50%; /* Adjust as needed to align vertically with the chart */
+    right: 20px; /* Distance from the right edge */
+    width: 250px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #ffea00;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-50%); /* Center vertically relative to top */
+}
+
+.airdrop-info h2 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.airdrop-info p {
+    font-size: 1.1em;
+}
