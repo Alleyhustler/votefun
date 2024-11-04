@@ -5,12 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const kamalaCount = document.getElementById('kamala-count');
     const resultTrump = document.getElementById('result-trump');
     const resultKamala = document.getElementById('result-kamala');
+    const connectButton = document.getElementById("connect-wallet");
 
     let trumpVotes = 0;
     let kamalaVotes = 0;
-    let lastTrumpVotes = 0;
-    let lastKamalaVotes = 0;
+    let userWalletAddress = null;
 
+    // Setup chart
     const voteChartCtx = document.getElementById('vote-chart').getContext('2d');
     const voteChart = new Chart(voteChartCtx, {
         type: 'pie',
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     trumpButton.addEventListener('click', () => vote('Trump'));
     kamalaButton.addEventListener('click', () => vote('Kamala'));
 
+    // Voting function
     function vote(candidate) {
         if (!userWalletAddress) {
             alert("Please connect your wallet first.");
@@ -55,14 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert(data.error); // Show error message from the server
+                alert(data.error);
                 return;
             }
             trumpVotes = data.trumpVotes;
             kamalaVotes = data.kamalaVotes;
             updateCounts();
             updateChart();
-            disableVoting(); // Disable voting after a successful vote
+            disableVoting();
         })
         .catch(error => console.error('Error:', error));
     }
@@ -99,90 +101,58 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Poll every 3 seconds for updates
     setInterval(fetchResults, 3000);
-});
 
-let userWalletAddress = null;
-
-async function connectWallet() {
-    if (window.solana && window.solana.isPhantom) {
-        try {
-            const response = await window.solana.connect();
-            userWalletAddress = response.publicKey.toString();
-            document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
-            const connectButton = document.getElementById("connect-wallet"); // Update button ID as needed
-            connectButton.classList.add('connected');
-            connectButton.textContent = 'Wallet Connected'; // Change button text
-            enableVoting(); // Enable voting when the wallet is connected
-        } catch (err) {
-            console.error("Wallet connection error:", err);
+    // Wallet connection function
+    async function connectWallet() {
+        if (window.solana && window.solana.isPhantom) {
+            try {
+                const response = await window.solana.connect();
+                userWalletAddress = response.publicKey.toString();
+                document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
+                connectButton.classList.add('connected');
+                connectButton.textContent = 'Wallet Connected';
+                enableVoting(); // Enable voting when the wallet is connected
+            } catch (err) {
+                console.error("Wallet connection error:", err);
+            }
+        } else {
+            alert("Please install Phantom Wallet to vote.");
         }
-    } else {
-        alert("Please install Phantom Wallet to vote.");
-    }
-}
-
-// Call connectWallet when user clicks "Connect Wallet" button
-document.getElementById("connect-wallet").addEventListener("click", connectWallet);
-
-// Function to enable voting buttons
-function enableVoting() {
-    trumpButton.disabled = false;
-    kamalaButton.disabled = false;
-}
-
-let userWalletAddress = null;
-
-// WebSocket or server endpoint for chat messages
-const chatSocket = new WebSocket("wss://your-chat-server.com");
-
-// Handle incoming chat messages
-chatSocket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    const chatMessages = document.getElementById("chat-messages");
-    const newMessage = document.createElement("p");
-    newMessage.textContent = `${message.user}: ${message.text}`;
-    chatMessages.appendChild(newMessage);
-    chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
-};
-
-// Function to send a chat message
-function sendMessage() {
-    const chatInput = document.getElementById("chat-input");
-    const message = chatInput.value.trim();
-    if (!userWalletAddress || message === "") {
-        alert("Please connect your wallet and enter a message.");
-        return;
     }
 
-    // Send message through WebSocket
-    chatSocket.send(JSON.stringify({ user: userWalletAddress, text: message }));
-    chatInput.value = ""; // Clear the input
-}
+    // Event listener for the "Connect Wallet" button
+    connectButton.addEventListener("click", connectWallet);
 
-// Attach event listener to send button
-document.getElementById("send-chat").addEventListener("click", sendMessage);
-document.getElementById("chat-input").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-});
+    // Enable voting buttons
+    function enableVoting() {
+        trumpButton.disabled = false;
+        kamalaButton.disabled = false;
+    }
 
-// Wallet connection code
-async function connectWallet() {
-    if (window.solana && window.solana.isPhantom) {
-        try {
-            const response = await window.solana.connect();
-            userWalletAddress = response.publicKey.toString();
-            document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
-            const connectButton = document.getElementById("connect-wallet");
-            connectButton.classList.add('connected');
-            connectButton.textContent = 'Wallet Connected';
-        } catch (err) {
-            console.error("Wallet connection error:", err);
+    // WebSocket for chat
+    const chatSocket = new WebSocket("wss://your-chat-server.com");
+    chatSocket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        const chatMessages = document.getElementById("chat-messages");
+        const newMessage = document.createElement("p");
+        newMessage.textContent = `${message.user}: ${message.text}`;
+        chatMessages.appendChild(newMessage);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    function sendMessage() {
+        const chatInput = document.getElementById("chat-input");
+        const message = chatInput.value.trim();
+        if (!userWalletAddress || message === "") {
+            alert("Please connect your wallet and enter a message.");
+            return;
         }
-    } else {
-        alert("Please install Phantom Wallet to vote.");
+        chatSocket.send(JSON.stringify({ user: userWalletAddress, text: message }));
+        chatInput.value = "";
     }
-}
 
-// Call connectWallet when user clicks "Connect Wallet" button
-document.getElementById("connect-wallet").addEventListener("click", connectWallet);
-
+    document.getElementById("send-chat").addEventListener("click", sendMessage);
+    document.getElementById("chat-input").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
+});
