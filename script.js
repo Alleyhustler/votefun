@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Chart from 'chart.js/auto'; // Make sure to import Chart.js correctly
+import Chart from 'chart.js/auto'; // Ensure you have Chart.js installed
 
 const VotingComponent = () => {
     const [trumpVotes, setTrumpVotes] = useState(0);
     const [kamalaVotes, setKamalaVotes] = useState(0);
-    const [voteChart, setVoteChart] = useState(null); // State to hold chart instance
+    const [voteChart, setVoteChart] = useState(null);
 
     useEffect(() => {
         // Initialize Chart.js when the component mounts
@@ -20,36 +20,31 @@ const VotingComponent = () => {
             },
             options: {
                 responsive: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                const label = tooltipItem.label || '';
-                                const count = tooltipItem.raw;
-                                return `${label}: ${count}`;
-                            }
-                        }
-                    }
-                }
             }
         });
 
-        // Save the chart instance in state
         setVoteChart(chart);
 
-        // Clean up chart instance on unmount
+        // Cleanup on unmount
         return () => {
             chart.destroy();
         };
-    }, []); // Only run on mount
+    }, []); // Run only once on mount
 
     useEffect(() => {
         const fetchVotes = async () => {
             try {
-                const response = await fetch('/api/results'); // Replace with your API endpoint
+                const response = await fetch('/api/results'); // Ensure your API is correct
                 const data = await response.json();
                 setTrumpVotes(data.trumpVotes);
                 setKamalaVotes(data.kamalaVotes);
+
+                // Update chart data
+                if (voteChart) {
+                    voteChart.data.datasets[0].data[0] = data.trumpVotes;
+                    voteChart.data.datasets[0].data[1] = data.kamalaVotes;
+                    voteChart.update();
+                }
             } catch (error) {
                 console.error('Error fetching votes:', error);
             }
@@ -59,7 +54,7 @@ const VotingComponent = () => {
 
         const interval = setInterval(fetchVotes, 5000); // Poll every 5 seconds
         return () => clearInterval(interval); // Cleanup on unmount
-    }, []);
+    }, [voteChart]); // Add voteChart as a dependency
 
     const handleVote = async (candidate) => {
         try {
@@ -72,11 +67,11 @@ const VotingComponent = () => {
             setTrumpVotes(data.trumpVotes);
             setKamalaVotes(data.kamalaVotes);
 
-            // Update chart data after voting
+            // Update chart data
             if (voteChart) {
-                voteChart.data.datasets[0].data[0] = data.trumpVotes; // Update Trump votes
-                voteChart.data.datasets[0].data[1] = data.kamalaVotes; // Update Kamala votes
-                voteChart.update(); // Refresh the chart
+                voteChart.data.datasets[0].data[0] = data.trumpVotes;
+                voteChart.data.datasets[0].data[1] = data.kamalaVotes;
+                voteChart.update();
             }
         } catch (error) {
             console.error('Error voting:', error);
@@ -90,7 +85,7 @@ const VotingComponent = () => {
             <h2>Kamala: {kamalaVotes}</h2>
             <button onClick={() => handleVote('Trump')}>Vote for Trump</button>
             <button onClick={() => handleVote('Kamala')}>Vote for Kamala</button>
-            <canvas id="vote-chart" width="400" height="400"></canvas> {/* Make sure this canvas exists */}
+            <canvas id="vote-chart" width="400" height="400"></canvas>
         </div>
     );
 };
