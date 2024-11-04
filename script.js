@@ -6,34 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultTrump = document.getElementById('result-trump');
     const resultKamala = document.getElementById('result-kamala');
 
-    // Initial vote counts
     let trumpVotes = 0;
     let kamalaVotes = 0;
 
-    // Create a pie chart
     const voteChartCtx = document.getElementById('vote-chart').getContext('2d');
     const voteChart = new Chart(voteChartCtx, {
         type: 'pie',
         data: {
             labels: ['Trump', 'Kamala'],
             datasets: [{
-                data: [0, 0],
+                data: [1, 1],
                 backgroundColor: ['#ff4757', '#74b9ff'],
-                borderColor: '#fff',
-                borderWidth: 2,
-                hoverOffset: 4,
+                hoverOffset: 4
             }]
         },
         options: {
-            animation: {
-                animateScale: true,
-                animateRotate: true,
-            },
             plugins: {
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
                     callbacks: {
                         label: function(tooltipItem) {
                             const label = tooltipItem.label || '';
@@ -51,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     kamalaButton.addEventListener('click', () => vote('Kamala'));
 
     function vote(candidate) {
-        fetch('/api/vote', {  // Use the relative path for the API call
+        fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ candidate })
@@ -74,16 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateChart() {
-        voteChart.data.datasets[0].data[0] = trumpVotes; // Votes for Trump
-        voteChart.data.datasets[0].data[1] = kamalaVotes; // Votes for Kamala
+        voteChart.data.datasets[0].data[0] = trumpVotes;
+        voteChart.data.datasets[0].data[1] = kamalaVotes;
         voteChart.update();
     }
 
-    // Fetch initial results after the page loads
     fetchResults();
 
     function fetchResults() {
-        fetch('/api/vote')  // Use the relative path for the API call
+        fetch('/api/results')
             .then(response => response.json())
             .then(data => {
                 trumpVotes = data.trumpVotes;

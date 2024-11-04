@@ -1,10 +1,10 @@
-const trumpVotes = 0;
-const kamalaVotes = 0;
+// vote.js in the /api folder
+let trumpVotes = 0;
+let kamalaVotes = 0;
 
 export default (req, res) => {
-    // Initialize votes
     if (req.method === 'POST') {
-        const candidate = req.body.candidate;
+        const { candidate } = req.body;
         if (candidate === 'Trump') {
             trumpVotes++;
         } else if (candidate === 'Kamala') {
