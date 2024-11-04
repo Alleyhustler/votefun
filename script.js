@@ -91,3 +91,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial fetch to load results on page load
     fetchResults();
 });
+
+import React, { useEffect, useState } from 'react';
+
+const VotingComponent = () => {
+    const [votes, setVotes] = useState(0);
+
+    const fetchVotes = async () => {
+        try {
+            const response = await fetch('/api/getVotes'); // Replace with your actual API endpoint
+            const data = await response.json();
+            setVotes(data.votes); // Adjust based on your API response structure
+        } catch (error) {
+            console.error('Error fetching votes:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchVotes(); // Fetch votes initially
+
+        const interval = setInterval(fetchVotes, 5000); // Fetch every 5 seconds
+        return () => clearInterval(interval); // Clean up on component unmount
+    }, []);
+
+    const handleVote = async () => {
+        // Your voting logic here
+        await fetch('/api/vote', { method: 'POST' }); // Replace with your voting API call
+        fetchVotes(); // Fetch updated votes after voting
+    };
+
+    return (
+        <div>
+            <h1>Votes: {votes}</h1>
+            <button onClick={handleVote}>Vote</button>
+        </div>
+    );
+};
+
+export default VotingComponent;
