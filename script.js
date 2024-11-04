@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             plugins: {
                 tooltip: {
                     callbacks: {
-                        label: (tooltipItem) => ${tooltipItem.label || ''}: ${tooltipItem.raw}
+                        label: (tooltipItem) => `${tooltipItem.label || ''}: ${tooltipItem.raw}`
                     }
                 }
             }
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await window.solana.connect();
                 userWalletAddress = response.publicKey.toString();
-                document.getElementById("wallet-status").textContent = Connected: ${userWalletAddress};
+                document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
                 connectButton.classList.add('connected');
                 connectButton.textContent = 'Wallet Connected';
                 enableVoting();
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showVoteConfirmation(candidate) {
         const confirmationMessage = document.createElement("div");
-        confirmationMessage.textContent = You voted for ${candidate}!;
+        confirmationMessage.textContent = `You voted for ${candidate}!`;
         confirmationMessage.classList.add("vote-confirmation");
         document.body.appendChild(confirmationMessage);
         setTimeout(() => confirmationMessage.remove(), 3000);
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.forEach(message => {
                     const newMessage = document.createElement("p");
                     const shortWallet = message.user.slice(0, 4);
-                    newMessage.textContent = ${shortWallet}: ${message.text};
+                    newMessage.textContent = `${shortWallet}: ${message.text}`;
                     newMessage.style.color = getColor(message.user);
                     chatMessages.appendChild(newMessage);
                 });
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getColor(walletAddress) {
         const hash = Array.from(walletAddress).reduce((acc, char) => acc + char.charCodeAt(0), 0);
         const hue = hash % 360;
-        return hsl(${hue}, 70%, 50%);
+        return `hsl(${hue}, 70%, 50%)`;
     }
 
     // Event Listeners
