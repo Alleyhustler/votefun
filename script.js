@@ -167,19 +167,45 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/api/chat')
             .then(response => response.json())
             .then(data => {
+                const wasScrolledToBottom = chatMessages.scrollTop + chatMessages.clientHeight === chatMessages.scrollHeight;
                 chatMessages.innerHTML = ""; // Clear current messages
+    
                 data.forEach(message => {
                     const newMessage = document.createElement("p");
-                    const shortWallet = message.user.slice(0, 4); // Get the first four letters of the wallet
-                    newMessage.textContent = `${shortWallet}: ${message.text}`;
-                    newMessage.style.color = getColor(message.user); // Set color based on wallet
+                    const shortWallet = message.user.slice(0, 4);
+                    
+                    // Format timestamp for display
+                    const date = new Date(message.timestamp);
+                    const formattedTime = `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+                    
+                    newMessage.textContent = `[${formattedTime}] ${shortWallet}: ${message.text}`;
+                    newMessage.style.color = getColor(message.user);
                     chatMessages.appendChild(newMessage);
                 });
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
+    
+                if (wasScrolledToBottom) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             })
             .catch(error => console.error('Error fetching messages:', error));
     }
+    
 
+    // In the POST /api/chat endpoint, add a timestamp to each message
+    const messages = [];
+
+    app.post('/api/chat', (req, res) => {
+        const { user, text } = req.body;
+        const timestamp = new Date().toISOString(); // Add a timestamp in ISO format
+        messages.push({ user, text, timestamp });
+        res.status(200).send();
+    });
+
+    app.get('/api/chat', (req, res) => {
+        res.json(messages); // Send all messages, each with a timestamp
+    });
+
+    
     // Poll every 3 seconds for chat updates
     setInterval(fetchMessages, 3000);
 
@@ -188,3 +214,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === "Enter") sendMessage();
     });
 });
+
+// Display confirmation message
+function showVoteConfirmation(candidate) {
+    const confirmationMessage = document.createElement("div");
+    confirmationMessage.textContent = `You voted for ${candidate}!`;
+    confirmationMessage.classList.add("vote-confirmation");
+    document.body.appendChild(confirmationMessage);
+    
+    // Remove the message after 3 seconds
+    setTimeout(() => confirmationMessage.remove(), 3000);
+}
+
+// Update the vote function to show the confirmation message
+function vote(candidate) {
+    if (!userWalletAddress) {
+        alert("Please connect your wallet first.");
+        return;
+    }
+
+    fetch('/api/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidate, walletAddress: userWalletAddress })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        trumpVotes = data.trumpVotes;
+        kamalaVotes = data.kamalaVotes;
+        updateCounts();
+        updateChart();
+        disableVoting();
+        showVoteConfirmation(candidate); // Show the confirmation after a successful vote
+    })
+    .catch(error => console.error('Error:', error));
+}
