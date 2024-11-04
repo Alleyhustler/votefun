@@ -11,7 +11,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    background: linear-gradient(135deg, #212057, #714c9e);
     color: #333;
     padding: 20px;
 }
@@ -135,7 +135,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    background: linear-gradient(135deg, #212057, #714c9e);
     color: #333;
     padding: 20px;
 }
