@@ -42,10 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
     kamalaButton.addEventListener('click', () => vote('Kamala'));
 
     function vote(candidate) {
+        if (!userWalletAddress) {
+            alert("Please connect your wallet first.");
+            return;
+        }
+
         fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ candidate })
+            body: JSON.stringify({ candidate, walletAddress: userWalletAddress })
         })
         .then(response => response.json())
         .then(data => {
@@ -53,8 +58,14 @@ document.addEventListener('DOMContentLoaded', () => {
             kamalaVotes = data.kamalaVotes;
             updateCounts();
             updateChart();
+            disableVoting();
         })
         .catch(error => console.error('Error:', error));
+    }
+
+    function disableVoting() {
+        trumpButton.disabled = true;
+        kamalaButton.disabled = true;
     }
 
     function updateCounts() {
@@ -74,16 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/api/vote')
             .then(response => response.json())
             .then(data => {
-                // Update the vote counts regardless to keep the chart rendering
                 trumpVotes = data.trumpVotes;
                 kamalaVotes = data.kamalaVotes;
-                
                 updateCounts();
                 updateChart();
-
-                // Update the last known vote counts
-                lastTrumpVotes = trumpVotes;
-                lastKamalaVotes = kamalaVotes;
             })
             .catch(error => console.error('Error fetching live updates:', error));
     }
@@ -91,3 +96,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // Poll every 3 seconds for updates
     setInterval(fetchResults, 3000);
 });
+
+let userWalletAddress = null;
+
+async function connectWallet() {
+    if (window.solana && window.solana.isPhantom) {
+        try {
+            const response = await window.solana.connect();
+            userWalletAddress = response.publicKey.toString();
+            document.getElementById("wallet-status").textContent = `Connected: ${userWalletAddress}`;
+            document.getElementById("connect-wallet").classList.add('connected');
+            enableVoting(); // Re-enable voting if previously disabled
+        } catch (err) {
+            console.error("Wallet connection error:", err);
+        }
+    } else {
+        alert("Please install Phantom Wallet to vote.");
+    }
+}
+
+// Call connectWallet when user clicks "Connect Wallet" button
+document.getElementById("connect-wallet").addEventListener("click", connectWallet);
+
+// Function to enable voting buttons
+function enableVoting() {
+    trumpButton.disabled = false;
+    kamalaButton.disabled = false;
+}
