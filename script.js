@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const voteChart = new Chart(document.getElementById('vote-chart').getContext('2d'), {
         type: 'pie',
         data: {
-            labels: ['Trump', 'Kamala'],
+            labels: ['USA', 'INDIA'],
             datasets: [{
                 data: [1, 1],
                 backgroundColor: ['#ff4757', '#74b9ff'],
