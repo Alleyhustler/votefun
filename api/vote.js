@@ -11,9 +11,9 @@ export default (req, res) => {
             return res.status(400).json({ error: 'You can only vote once.' });
         }
 
-        if (candidate === 'Trump') {
+        if (candidate === 'USA') {
             trumpVotes++;
-        } else if (candidate === 'Kamala') {
+        } else if (candidate === 'INDIA') {
             kamalaVotes++;
         }
 
