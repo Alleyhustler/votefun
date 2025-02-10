@@ -11,9 +11,9 @@ let kamalaVotes = 0;
 
 app.post('/vote', (req, res) => {
     const candidate = req.body.candidate;
-    if (candidate === 'Trump') {
+    if (candidate === 'USA') {
         trumpVotes++;
-    } else if (candidate === 'Kamala') {
+    } else if (candidate === 'INDIA') {
         kamalaVotes++;
     }
     res.json({ trumpVotes, kamalaVotes });
