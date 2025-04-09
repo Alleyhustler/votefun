@@ -6,21 +6,21 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-let trumpVotes = 0;
-let kamalaVotes = 0;
+let usaVotes = 0;
+let chinaVotes = 0;
 
 app.post('/vote', (req, res) => {
     const candidate = req.body.candidate;
-    if (candidate === 'Trump') {
-        trumpVotes++;
-    } else if (candidate === 'Kamala') {
-        kamalaVotes++;
+    if (candidate === 'USA') {
+        usaVotes++;
+    } else if (candidate === 'CHINA') {
+        chinaVotes++;
     }
-    res.json({ trumpVotes, kamalaVotes });
+    res.json({ usaVotes, chinaVotes });
 });
 
 app.get('/results', (req, res) => {
-    res.json({ trumpVotes, kamalaVotes });
+    res.json({ usaVotes, chinaVotes });
 });
 
 app.listen(PORT, () => {

@@ -1,25 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
-    const trumpButton = document.getElementById('vote-trump');
-    const kamalaButton = document.getElementById('vote-kamala');
-    const trumpCount = document.getElementById('trump-count');
-    const kamalaCount = document.getElementById('kamala-count');
-    const resultTrump = document.getElementById('result-trump');
-    const resultKamala = document.getElementById('result-kamala');
+    const usaButton = document.getElementById('vote-trump');
+    const chinaButton = document.getElementById('vote-kamala');
+    const usaCount = document.getElementById('trump-count');
+    const chinaCount = document.getElementById('kamala-count');
+    const resultUSA = document.getElementById('result-trump');
+    const resultChina = document.getElementById('result-kamala');
     const connectButton = document.getElementById("connect-wallet");
     const chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");
     const sendChatButton = document.getElementById("send-chat");
 
     // Variables
-    let trumpVotes = 0, kamalaVotes = 0;
+    let usaVotes = 0, chinaVotes = 0;
     let userWalletAddress = null;
 
     // Initialize Chart
     const voteChart = new Chart(document.getElementById('vote-chart').getContext('2d'), {
         type: 'pie',
         data: {
-            labels: ['Trump', 'Kamala'],
+            labels: ['USA', 'CHINA'],
             datasets: [{
                 data: [1, 1],
                 backgroundColor: ['#ff4757', '#74b9ff'],
@@ -72,8 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(data.error);
                 return;
             }
-            trumpVotes = data.trumpVotes;
-            kamalaVotes = data.kamalaVotes;
+            usaVotes = data.usaVotes;
+            chinaVotes = data.chinaVotes;
             updateCounts();
             updateChart();
             disableVoting();
@@ -91,24 +91,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function enableVoting() {
-        trumpButton.disabled = false;
-        kamalaButton.disabled = false;
+        usaButton.disabled = false;
+        chinaButton.disabled = false;
     }
 
     function disableVoting() {
-        trumpButton.disabled = true;
-        kamalaButton.disabled = true;
+        usaButton.disabled = true;
+        chinaButton.disabled = true;
     }
 
     function updateCounts() {
-        trumpCount.textContent = trumpVotes;
-        kamalaCount.textContent = kamalaVotes;
-        resultTrump.textContent = trumpVotes;
-        resultKamala.textContent = kamalaVotes;
+        usaCount.textContent = usaVotes;
+        chinaCount.textContent = chinaVotes;
+        resultUSA.textContent = usaVotes;
+        resultChina.textContent = chinaVotes;
     }
 
     function updateChart() {
-        voteChart.data.datasets[0].data = [trumpVotes, kamalaVotes];
+        voteChart.data.datasets[0].data = [usaVotes, chinaVotes];
         voteChart.update();
     }
 
@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/api/vote')
             .then(response => response.json())
             .then(data => {
-                trumpVotes = data.trumpVotes;
-                kamalaVotes = data.kamalaVotes;
+                usaVotes = data.usaVotes;
+                chinaVotes = data.chinaVotes;
                 updateCounts();
                 updateChart();
             })
@@ -175,8 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners
     connectButton.addEventListener("click", connectWallet);
-    trumpButton.addEventListener('click', () => vote('Trump'));
-    kamalaButton.addEventListener('click', () => vote('Kamala'));
+    usaButton.addEventListener('click', () => vote('USA'));
+    chinaButton.addEventListener('click', () => vote('CHINA'));
     sendChatButton.addEventListener("click", sendMessage);
     chatInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") sendMessage();
