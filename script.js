@@ -55,12 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     function vote(candidate) {
         if (!userWalletAddress) {
             alert("Please connect your wallet first.");
             return;
         }
-
+    
         fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
